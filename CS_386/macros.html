@@ -1,0 +1,77 @@
+<!doctype html>
+<html><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Macros · NotDetermined</title>
+<link rel="stylesheet" href="css/main.css">
+</head><body>
+
+<header class="topbar">
+  <div class="inner">
+    <nav class="left-menu">
+      <a class="" href="index.html">Home</a>
+      <a class="active" href="macros.html">Macros</a>
+      <a class="" href="goals.html">Goals</a>
+      <a class="" href="cost.html">Cost</a>
+      <a class="" href="allergies.html">Allergies</a>
+      <a class="" href="weight.html">Weight</a>
+      <a class="" href="diary.html">Calories</a>
+    </nav>
+
+
+    <div class="site-name">NotDetermined</div>
+
+    <div class="right-area">
+
+
+      <span class="logo" title="Logo"></span>
+
+
+      <a class="btn btn-secondary" href="#">Profile</a>
+
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+<section class="card col-12">
+
+  <h2>Macro Calculator (static demo)</h2>
+
+  <form class="form-grid mt-3" onsubmit="return demoCalculateMacros(event)">
+
+    <label>Sex<select name="sex"><option>male</option><option>female</option></select></label>
+
+
+    <label>Age<input type="number" name="age" placeholder="20"></label>
+    <label>Height (cm)<input type="number" name="height" placeholder="175"></label>
+    <label>Weight (kg)<input type="number" name="weight" placeholder="70"></label>
+    <label class="full">Activity<select name="activity"><option>sedentary</option><option>light</option><option selected>moderate</option><option>very</option><option>athlete</option></select></label>
+    <label>Protein (g/kg)<input type="number" name="ppk" step="0.1" value="1.8"></label>
+    <label>Fat min (g/kg)<input type="number" name="fpk" step="0.1" value="0.6"></label>
+    <div class="full"><button class="btn">Calculate</button></div>
+  </form>
+
+
+  <div id="macroResult" class="mt-3 card" style="display:none">
+
+
+    <h3>Suggested Targets</h3>
+
+    <p class="mt-2">Calories: <strong id="cals"></strong></p>
+
+    <p>Protein: <strong id="prot"></strong> g · Carbs: <strong id="carb"></strong> g · Fat: 
+      <strong id="fat"></strong> g</p>
+
+  </div>
+
+</section>
+
+</main>
+
+
+
+<footer class="footer">© 2025 NotDetermined</footer>
+
+<script src="js/app.js"></script>
+</body></html>
