@@ -53,4 +53,4 @@ We use [SemVer](http://semver.org/) for versioning.
 
 ## License
 
-This project is licensed under the Unlicense - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the Unlicense - see the [CalPal License.md](CalPal License.md) file for details
