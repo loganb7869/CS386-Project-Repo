@@ -1,6 +1,6 @@
 # CalPal-CS 386 Project Repo
 
-One Paragraph of project description goes here
+CalPal is a fitness, budget, and calorie traker website that is a part of an undergraduate student led group project for CS 386. The website is primarily geared towards college students due to their busy schedules and lack of convient healthy food options often making it difficult for them to maintain healthy eating. CalPal solves these aformentioned problem by; tracking a students meals and activity to help them reach fitness goals, helping students find healthy food thats safe for them to eat within their budget, and monitoring their intake of macros. Each of these features are broken down in the website into tabs which take in input from users to customize their fitness experience. The goal of the project primarily is to provide project development experience to the undergraduate students to prepare them for other projects they may work on in the future.
 
 ## Getting Started
 
@@ -42,14 +42,15 @@ We use [SemVer](http://semver.org/) for versioning.
 
 ## Authors
 
-* **Logan Bankert** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-* **Rita Bolanos** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-* **Annaliese Dedmore** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-* **Isidro Marquez** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-* **Nile Ham** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-* **Luke Flaker** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
+* **Logan Bankert** - *Developed intial planning diagrams and progress blueprints for the project*
+* **Rita Bolanos** - *Developed intital UI and Mascot design for the project*
+* **Annaliese Dedmore** - *Developed the intial concept and automated testing for the projet* 
+* **Isidro Marquez** - *Developed the intial HTML and Javascript codebase for the project*
+* **Nile Ham** - *Developed the intial concept and helped establish market research*
+* **Luke Flaker** - *Developed intial scope and functionality definition* 
   
 ## Contribution Guidelines
+For Teamembers: When contributing to the Repo or Deliverables make sure to add deliverables to the repository when completed, for these a simple commit message such as "added D1" will suffuce. When adding new visual assets to the website please send potential designs to discord first to be approved, then add them to the repo to avoid clutter with a simple commit message stating what the asset is for. When chaninging code within the website be sure to submit a pull request detailing the changes/additions and what issue number it falls under if applicable.
 
 ## License
 
