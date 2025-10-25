@@ -1,75 +1,515 @@
 <!doctype html>
-<html><head>
-<meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Index · NotDetermined</title>
-<link rel="stylesheet" href="css/main.css">
-</head><body>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+  <meta http-equiv="Pragma" content="no-cache"/>
+  <meta http-equiv="Expires" content="0"/>
+  <title>CalPal · Dashboard</title>
+
+  <link rel="stylesheet" href="css/main.css?v=16">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <script src="js/app.js?v=16" defer></script>
+
+  <style>
+
+
+    .dashboard-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .streak-card {
+      background: var(--bg-card,#fff);
+      border: 1px solid rgba(0,0,0,.07);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.3;
+      text-align: center;
+      min-width: 90px;
+    }
+    .streak-card span {
+      display:block;
+      font-size:10px;
+      font-weight:400;
+      color:var(--text-dim,#666);
+    }
+
+    .dash-grid-top {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+      gap:16px;
+    }
+
+    .card-header-line {
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      margin-bottom:12px;
+    }
+    .card-header-line h2 {
+      font-size:16px;
+      font-weight:600;
+      line-height:1.3;
+      margin:0;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .card-sub {
+      font-size:12px;
+      color:var(--text-dim,#666);
+      line-height:1.4;
+    }
+
+    /* rings layout */
+    .ring-wrap-row {
+      display:flex;
+      flex-wrap:wrap;
+      gap:16px;
+    }
+    .ring-col {
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      min-width:140px;
+    }
+    .ring-label-main {
+      margin-top:8px;
+      font-size:13px;
+      text-align:center;
+      line-height:1.4;
+    }
+    .ring-number-big {
+      font-size:24px;
+      font-weight:700;
+      line-height:1.2;
+    }
+    .ring-caption-small {
+      font-size:11px;
+      color:var(--text-dim,#666);
+    }
+
+    .ring-breakdown {
+      flex:1;
+      min-width:160px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .ring-row {
+      display:flex;
+      align-items:flex-start;
+      gap:8px;
+      font-size:13px;
+      line-height:1.3;
+    }
+    .ring-row .icon {
+      font-size:16px;
+      line-height:1;
+    }
+    .ring-row .label {
+      font-size:12px;
+      color:var(--text-dim,#666);
+    }
+    .ring-row .value {
+      font-weight:600;
+      font-size:14px;
+    }
+    .ring-cta {
+      margin-top:8px;
+      display:flex;
+    }
+
+    .summary-strip {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+      gap:12px;
+      margin-top:24px;
+    }
+    .summary-box {
+      background:var(--bg-card,#fff);
+      border:1px solid rgba(0,0,0,.07);
+      border-radius:10px;
+      padding:12px;
+      text-align:left;
+      min-height:72px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+    }
+    .summary-label {
+      font-size:11px;
+      color:var(--text-dim,#666);
+      font-weight:500;
+      text-transform:uppercase;
+      letter-spacing:.03em;
+    }
+    .summary-value {
+      font-size:20px;
+      line-height:1.2;
+      font-weight:700;
+      margin-top:4px;
+      display:flex;
+      align-items:baseline;
+      gap:6px;
+    }
+    .summary-extra {
+      font-size:11px;
+      line-height:1.3;
+      font-weight:500;
+      color:var(--text-dim,#666);
+    }
+
+    /* bottom row */
+    .dash-grid-bottom {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+      gap:16px;
+      margin-top:24px;
+    }
+
+    .weight-mini-head,
+    .budget-mini-head,
+    .qa-head {
+      font-size:14px;
+      font-weight:600;
+      margin:0 0 4px 0;
+      line-height:1.3;
+    }
+    .mini-meta {
+      font-size:12px;
+      color:var(--text-dim,#666);
+      line-height:1.4;
+      margin-bottom:12px;
+    }
+
+    .big-number {
+      font-size:28px;
+      font-weight:800;
+      line-height:1.2;
+    }
+
+    .btn-col-stack {
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .ring {
+      --pct: 0;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background:
+        conic-gradient(var(--brand,#8c1f13) calc(var(--pct)*1%), #eee 0%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+    }
+    .ring-inner {
+      background:var(--bg-card,#fff);
+      border-radius:50%;
+      width:78px;
+      height:78px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      border:2px solid rgba(0,0,0,.05);
+    }
+    .ring--empty {
+      background:#eee;
+    }
+
+
+    .btn-inline-link {
+      font-size:12px;
+      font-weight:600;
+      line-height:1.2;
+      background:#000;
+      color:#fff;
+      padding:6px 10px;
+      border-radius:6px;
+      text-decoration:none;
+      display:inline-block;
+    }
+
+    @media (max-width:500px){
+      .ring-col { min-width:120px; }
+    }
+  </style>
+</head>
+<body>
 
 <header class="topbar">
   <div class="inner">
-    <nav class="left-menu">
-      <a class="active" href="index.html">Home</a>
-      <a class="" href="macros.html">Macros</a>
-      <a class="" href="goals.html">Goals</a>
-      <a class="" href="cost.html">Cost</a>
-      <a class="" href="allergies.html">Allergies</a>
-      <a class="" href="weight.html">Weight</a>
-      <a class="" href="diary.html">Calories</a>
+    <div class="brand-left">
+      <img src="img/Logo_Prototype.webp" alt="CalPal Logo" class="logo">
+      <strong class="brand">CalPal</strong>
+    </div>
+
+    <nav class="nav-tabs">
+      <a href="index.html" class="active">Home</a>
+      <a href="macros.html">Macros</a>
+      <a href="goals.html">Goals</a>
+      <a href="cost.html">Cost</a>
+      <a href="allergies.html">Allergies</a>
+      <a href="weight.html">Weight</a>
+      <a href="diary.html">Calories</a>
+      
     </nav>
 
-
-    <div class="site-name">NotDetermined</div>
-
     <div class="right-area">
-
-
-      <span class="logo" title="Logo"></span>
-
-      <a class="btn btn-secondary" href="#">Profile</a>
-
+      <a class="btn btn-secondary" href="settings.html">Profile</a>
     </div>
   </div>
 </header>
 
-<main class="container">
+<main class="container" id="home-dashboard">
 
-<div class="grid">
 
-  <section class="card col-4">
+  <section class="dashboard-header-row">
+    <div style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+      <div style="display:flex;flex-direction:column;">
+        <div style="font-size:12px;color:var(--text-dim,#666);line-height:1.3;font-weight:500;">Today</div>
+        <div style="font-size:20px;font-weight:700;line-height:1.2;">
+          <span id="homeDateLabel"></span>
+        </div>
+      </div>
+    </div>
 
-    <h2>Today’s Macros</h2>
-    <div class="meta">Target vs logged</div>
-    <div class="mt-3"><span class="pill">Calories: <strong>0</strong> / 2500</span></div>
-    <div class="mt-2"><span class="pill">Protein: <strong>0g</strong> / 180g</span></div>
-    <div class="mt-2"><span class="pill">Carbs: <strong>0g</strong> / 300g</span></div>
-    <div class="mt-2"><span class="pill">Fat: <strong>0g</strong> / 70g</span></div>
+    <div class="streak-card">
+      <div id="streakDays">1 DAY</div>
+      <span>STREAK</span>
+    </div>
   </section>
 
 
-  <section class="card col-4">
+  <div class="dash-grid-top">
 
-    <h2>Weight (last 30 days)</h2>
 
-    <div class="meta">Sample data</div>
+    <section class="card">
+      <div class="card-header-line">
+        <h2>Calories</h2>
+        <div class="card-sub">Remaining = Goal − Food + Exercise</div>
+      </div>
 
-    <table class="table mt-3">
-      <thead><tr><th>Date</th><th>Weight</th></tr></thead>
-      <tbody id="weightRows"><tr><td>—</td><td>—</td></tr></tbody>
+      <div class="ring-wrap-row">
 
-    </table>
+        <div class="ring-col">
+          <div class="ring ring--empty" id="calRing" style="--pct:0">
+            <div class="ring-inner">
+              <div class="ring-number-big" id="calRemain">0</div>
+              <div class="ring-caption-small">left</div>
+            </div>
+          </div>
+          <div class="ring-label-main">
+            <strong id="calEatenLabel">0 eaten</strong>
+            <div style="font-size:11px;color:var(--text-dim,#666);">
+              of <span id="calGoalShort">0</span> kcal
+            </div>
+          </div>
+        </div>
+
+
+        <div class="ring-breakdown">
+          <div class="ring-row">
+            <span class="icon">🎯</span>
+            <div>
+              <div class="label">Base Goal</div>
+              <div class="value" id="calGoal">0</div>
+            </div>
+          </div>
+
+          <div class="ring-row">
+            <span class="icon">🍽️</span>
+            <div>
+              <div class="label">Food (so far)</div>
+              <div class="value" id="calFood">0</div>
+            </div>
+          </div>
+
+          <div class="ring-row">
+            <span class="icon">🔥</span>
+            <div>
+              <div class="label">Exercise bonus</div>
+              <div class="value" id="calEx">0</div>
+            </div>
+          </div>
+
+          <div class="ring-cta">
+            <a class="btn btn-secondary" style="flex:1;text-align:center" href="diary.html">Add meal</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="card">
+      <div class="card-header-line">
+        <h2>Food Budget</h2>
+        <div class="card-sub">What you’ve spent vs. budget</div>
+      </div>
+
+      <div class="ring-wrap-row">
+
+        <div class="ring-col">
+          <div class="ring ring--empty" id="budgetRing" style="--pct:0">
+            <div class="ring-inner">
+              <div class="ring-number-big" id="budgetRemain">$0</div>
+              <div class="ring-caption-small">left</div>
+            </div>
+          </div>
+          <div class="ring-label-main">
+            <strong id="budgetSpentLabel">$0 spent</strong>
+            <div style="font-size:11px;color:var(--text-dim,#666);">
+              of <span id="budgetGoalShort">$0</span>
+              <span id="budgetSpanLabel">today</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ring-breakdown">
+          <div class="ring-row">
+            <span class="icon">💸</span>
+            <div>
+              <div class="label">Budget</div>
+              <div class="value" id="budgetGoal">$0.00</div>
+            </div>
+          </div>
+
+          <div class="ring-row">
+            <span class="icon">🛒</span>
+            <div>
+              <div class="label">Spend (so far)</div>
+              <div class="value" id="budgetSpent">$0.00</div>
+            </div>
+          </div>
+
+          <div class="ring-row">
+            <span class="icon">📊</span>
+            <div>
+              <div class="label">MTD Avg / day</div>
+              <div class="value" id="budgetAvgDay">$0.00</div>
+            </div>
+          </div>
+
+          <div class="ring-cta">
+            <a class="btn btn-secondary" style="flex:1;text-align:center" href="cost.html">Add purchase</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+
+  <section class="summary-strip">
+    <div class="summary-box">
+      <div class="summary-label">Calories Eaten</div>
+      <div class="summary-value">
+        <span id="sumCaloriesNow">0</span>
+        <small style="font-size:11px;font-weight:500;color:var(--text-dim,#666)">kcal</small>
+      </div>
+      <div class="summary-extra">
+        Goal <span id="sumCaloriesGoal">0</span> kcal
+      </div>
+    </div>
+
+    <div class="summary-box">
+      <div class="summary-label">Food Spend</div>
+      <div class="summary-value">
+        <span id="sumSpendNow">$0.00</span>
+      </div>
+      <div class="summary-extra">
+        Today / <span id="sumSpendBudget">$0.00</span> budget
+      </div>
+    </div>
+
+    <div class="summary-box">
+      <div class="summary-label">Protein so far</div>
+      <div class="summary-value">
+        <span id="sumProteinNow">0</span>
+        <small style="font-size:11px;font-weight:500;color:var(--text-dim,#666)">g</small>
+      </div>
+      <div class="summary-extra">
+        Target <span id="sumProteinGoal">—</span> g
+      </div>
+    </div>
+
+    <div class="summary-box">
+      <div class="summary-label">Carbs so far</div>
+      <div class="summary-value">
+        <span id="sumCarbNow">0</span>
+        <small style="font-size:11px;font-weight:500;color:var(--text-dim,#666)">g</small>
+      </div>
+      <div class="summary-extra">
+        Target <span id="sumCarbGoal">—</span> g
+      </div>
+    </div>
   </section>
-  <section class="card col-4">
-    <h2>Budget MTD</h2>
 
-    <div class="meta">Estimated spend this month</div>
-    <div class="mt-3" style="font-size:32px;font-weight:800">$0.00</div>
-    <a class="btn mt-3" href="cost.html">Open Cost Calculator</a>
-  </section>
-</div>
 
+  <div class="dash-grid-bottom">
+
+
+    <section class="card">
+      <h3 class="weight-mini-head">Weight trend</h3>
+      <div class="mini-meta">Last 10 entries</div>
+      <canvas id="homeWeightLine" height="140"></canvas>
+      <div style="margin-top:12px;">
+        <a class="btn btn-secondary" style="width:100%;text-align:center" href="weight.html">Log weight</a>
+      </div>
+    </section>
+
+
+    <section class="card">
+      <h3 class="budget-mini-head">Budget MTD</h3>
+      <div class="mini-meta">Estimated spend this month</div>
+      <div class="big-number" id="homeBudget">$0.00</div>
+      <div style="font-size:12px;color:var(--text-dim,#666);margin-top:6px;">
+        Avg/day: <span id="homeBudgetAvg">$0.00</span>
+      </div>
+      <div style="margin-top:12px;">
+        <a class="btn btn-secondary" style="width:100%;text-align:center" href="cost.html">Open Cost Tracker</a>
+      </div>
+    </section>
+
+
+    <section class="card">
+      <h3 class="qa-head">Quick actions</h3>
+      <div class="mini-meta">Fast access</div>
+      <div class="btn-col-stack">
+        <a class="btn" href="diary.html">Add meal to diary</a>
+        <a class="btn btn-secondary" href="macros.html">Recalculate macros</a>
+        <a class="btn btn-secondary" href="goals.html">Add a goal</a>
+        <a class="btn btn-secondary" href="allergies.html">Add an allergy</a>
+      </div>
+    </section>
+
+  </div>
 
 </main>
-<footer class="footer">© 2025 NotDetermined</footer>
 
+<footer class="footer">© <span id="cpyYear"></span> CalPal</footer>
 <script src="js/app.js"></script>
-</body></html>
+<script>
+  document.getElementById('cpyYear').textContent = new Date().getFullYear();
+
+  const d = new Date();
+  const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  document.getElementById('homeDateLabel').textContent =
+    monthNames[d.getMonth()] + " " + d.getDate();
+</script>
+</body>
+</html>
