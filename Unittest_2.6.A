@@ -1,0 +1,13 @@
+import unittest 
+
+class test_budgetTracking(unittest.TestCase):
+
+	def test_spending(self):
+		tracker = budget(100)
+		tracker.usePlan(25)
+		tracker.useOther(15)
+		self.assertEqual(tracker.balance, 75)
+		self.assertEqual(totalSpent(), 40)
+
+if __name__ == "__main__":
+    unittest.main()
