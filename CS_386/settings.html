@@ -1,0 +1,276 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+  <meta http-equiv="Pragma" content="no-cache"/>
+  <meta http-equiv="Expires" content="0"/>
+  <title>CalPal · Profile</title>
+
+  <link rel="stylesheet" href="css/main.css?v=17">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="js/app.js?v=17" defer></script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="inner">
+    <div class="brand-left">
+      <img src="img/Logo_Prototype.webp" alt="CalPal Logo" class="logo">
+      <strong class="brand">CalPal</strong>
+    </div>
+
+    <nav class="nav-tabs">
+      <a href="index.html">Home</a>
+      <a href="macros.html">Macros</a>
+      <a href="goals.html">Goals</a>
+      <a href="cost.html">Cost</a>
+      <a href="allergies.html">Allergies</a>
+      <a href="weight.html">Weight</a>
+      <a href="diary.html">Calories</a>
+      
+    </nav>
+
+    <div class="right-area">
+      <a class="btn btn-secondary active" href="settings.html">Profile</a>
+    </div>
+  </div>
+</header>
+
+<main class="container" style="max-width:1000px;">
+
+
+  <section class="card" style="margin-bottom:1rem;">
+    <div style="display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:1.5rem;">
+
+
+      <div style="display:flex;align-items:flex-start;gap:1rem;flex:1;min-width:240px;">
+
+        <div style="
+          width:64px;height:64px;border-radius:999px;
+          background:#f5f5f5;
+          border:2px solid #ddd;
+          font-size:1rem;
+          font-weight:600;
+          color:#555;
+          display:flex;align-items:center;justify-content:center;
+          flex-shrink:0;
+        " id="profAvatar">
+          :)
+        </div>
+
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:1rem;font-weight:600;line-height:1.3;color:#1a1a1a;">
+            <span id="profName">Your Name</span>
+          </div>
+
+          <div style="margin-top:.25rem;font-size:.8rem;line-height:1.4;color:#666;">
+            <span id="profUnits">metric (kg, cm)</span>
+          </div>
+
+
+        </div>
+      </div>
+
+
+      <div style="
+        flex:1;min-width:240px;max-width:320px;
+        background:rgba(139,46,28,0.05);
+        border:1px solid rgba(139,46,28,0.15);
+        border-radius:12px;
+        padding:1rem 1rem .75rem;
+      ">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;">
+          <div style="font-size:.8rem;font-weight:600;color:#1a1a1a;display:flex;align-items:center;gap:.4rem;">
+            <span>Daily Targets</span>
+            <span class="pill" style="background:#fff;border:1px solid rgba(0,0,0,0.08);font-size:.6rem;padding:.2rem .4rem;border-radius:999px;line-height:1;font-weight:500;">
+              from Macros
+            </span>
+          </div>
+          <a class="btn btn-sm btn-secondary" href="macros.html" style="font-size:.7rem;padding:.4rem .6rem;border-radius:6px;line-height:1;">
+            Recalculate
+          </a>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem;margin-top:1rem;font-size:.8rem;line-height:1.3;">
+          <div style="background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:8px;padding:.5rem .6rem;">
+            <div style="font-size:.7rem;color:#777;">Calories</div>
+            <div style="font-size:1rem;font-weight:600;color:#1a1a1a;">
+              <span id="tgt_cal">—</span>
+              <span style="font-size:.7rem;color:#777;font-weight:500;margin-left:.25rem;">kcal</span>
+            </div>
+          </div>
+
+          <div style="background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:8px;padding:.5rem .6rem;">
+            <div style="font-size:.7rem;color:#777;">Protein</div>
+            <div style="font-size:1rem;font-weight:600;color:#1a1a1a;">
+              <span id="tgt_pro">—</span>
+              <span style="font-size:.7rem;color:#777;font-weight:500;margin-left:.25rem;">g</span>
+            </div>
+          </div>
+
+          <div style="background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:8px;padding:.5rem .6rem;">
+            <div style="font-size:.7rem;color:#777;">Carbs</div>
+            <div style="font-size:1rem;font-weight:600;color:#1a1a1a;">
+              <span id="tgt_car">—</span>
+              <span style="font-size:.7rem;color:#777;font-weight:500;margin-left:.25rem;">g</span>
+            </div>
+          </div>
+
+          <div style="background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:8px;padding:.5rem .6rem;">
+            <div style="font-size:.7rem;color:#777;">Fat</div>
+            <div style="font-size:1rem;font-weight:600;color:#1a1a1a;">
+              <span id="tgt_fat">—</span>
+              <span style="font-size:.7rem;color:#777;font-weight:500;margin-left:.25rem;">g</span>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <section class="card" style="margin-bottom:1rem;">
+    <h2 style="margin:0;font-size:1rem;font-weight:600;">Profile Settings</h2>
+    <div class="meta" style="font-size:.8rem;color:#777;margin-top:.25rem;">
+      Update how CalPal talks to you and how numbers are shown.
+    </div>
+
+    <form class="form-grid mt-3" id="settingsForm" onsubmit="return false" style="max-width:600px;">
+
+      <label class="full">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;">
+          <div>
+            <div style="font-size:.8rem;font-weight:600;color:#1a1a1a;">Display name</div>
+
+        </div>
+        <input type="text" name="name" placeholder="Your name" style="margin-top:.5rem;">
+      </label>
+
+
+      <label class="full">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;">
+          <div>
+            <div style="font-size:.8rem;font-weight:600;color:#1a1a1a;">Units</div>
+            <div style="font-size:.75rem;color:#777;line-height:1.4;">
+              Affects weight, height, and body metrics.
+            </div>
+          </div>
+        </div>
+        <select name="units" style="margin-top:.5rem;">
+          <option value="metric">metric (kg, cm)</option>
+          <option value="imperial">imperial (lb, in)</option>
+        </select>
+      </label>
+
+
+      <label class="full" style="opacity:.5;">
+        <div style="font-size:.8rem;font-weight:600;color:#1a1a1a;">Avatar URL <span class="pill" style="background:#eee;border:1px solid #ddd;font-size:.6rem;padding:.2rem .4rem;border-radius:999px;line-height:1;font-weight:500;margin-left:.4rem;">coming soon</span></div>
+
+        <input type="url" name="avatar" placeholder="https://…" disabled style="margin-top:.5rem;">
+      </label>
+
+      <div class="full" style="margin-top:.75rem;">
+        <button class="btn"
+          style="min-width:200px;"
+          onclick="document.getElementById('settingsForm').dispatchEvent(new Event('submit'))">
+          Save changes
+        </button>
+      </div>
+    </form>
+
+
+  </section>
+
+  <section class="card" style="margin-bottom:2rem;">
+    <h2 style="margin:0;font-size:1rem;font-weight:600;">Your Daily Targets</h2>
+    <div class="meta" style="font-size:.8rem;color:#777;margin-top:.25rem;">
+      Based on what you chose in the Macros calculator (cut / maintain / bulk).
+    </div>
+
+    <div class="grid mt-2" style="row-gap:.75rem;">
+      <div class="col-3">
+        <span class="pill">Calories</span>
+        <div style="font-size:1.2rem;font-weight:600;color:#1a1a1a;line-height:1.4;">
+          <strong id="tgt_cal_dup">—</strong> <span style="font-size:.8rem;color:#777;font-weight:500;">kcal</span>
+        </div>
+      </div>
+      <div class="col-3">
+        <span class="pill">Protein</span>
+        <div style="font-size:1.2rem;font-weight:600;color:#1a1a1a;line-height:1.4;">
+          <strong id="tgt_pro_dup">—</strong> <span style="font-size:.8rem;color:#777;font-weight:500;">g</span>
+        </div>
+      </div>
+      <div class="col-3">
+        <span class="pill">Carbs</span>
+        <div style="font-size:1.2rem;font-weight:600;color:#1a1a1a;line-height:1.4;">
+          <strong id="tgt_car_dup">—</strong> <span style="font-size:.8rem;color:#777;font-weight:500;">g</span>
+        </div>
+      </div>
+      <div class="col-3">
+        <span class="pill">Fat</span>
+        <div style="font-size:1.2rem;font-weight:600;color:#1a1a1a;line-height:1.4;">
+          <strong id="tgt_fat_dup">—</strong> <span style="font-size:.8rem;color:#777;font-weight:500;">g</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:1rem;">
+      <a class="btn btn-secondary" href="macros.html" style="min-width:200px;">Open Macros Calculator</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">© 2025 CalPal</footer>
+
+<script src="js/app.js?v=17"></script>
+
+<script>
+
+  document.addEventListener('DOMContentLoaded', () => {
+    try {
+      const s = JSON.parse(localStorage.getItem('cf')) || {};
+      const t = s.targets || {};
+      const settings = s.settings || {};
+
+
+      const profNameEl  = document.getElementById('profName');
+      const profUnitsEl = document.getElementById('profUnits');
+
+      if (profNameEl)  profNameEl.textContent  = settings.name || 'Your Name';
+      if (profUnitsEl) profUnitsEl.textContent = (settings.units === 'imperial')
+        ? 'imperial (lb, in)'
+        : 'metric (kg, cm)';
+
+
+      const form = document.getElementById('settingsForm');
+      if (form) {
+        if (form.elements.name)  form.elements.name.value  = settings.name || '';
+        if (form.elements.units) form.elements.units.value = settings.units || 'metric';
+      }
+
+
+      document.getElementById('tgt_cal').textContent = t.calories ?? '—';
+      document.getElementById('tgt_pro').textContent = t.proteinG ?? '—';
+      document.getElementById('tgt_car').textContent = t.carbsG ?? '—';
+      document.getElementById('tgt_fat').textContent = t.fatG ?? '—';
+
+
+      document.getElementById('tgt_cal_dup').textContent = t.calories ?? '—';
+      document.getElementById('tgt_pro_dup').textContent = t.proteinG ?? '—';
+      document.getElementById('tgt_car_dup').textContent = t.carbsG ?? '—';
+      document.getElementById('tgt_fat_dup').textContent = t.fatG ?? '—';
+
+    } catch (err) {
+      console.error('Settings init failed', err);
+    }
+  });
+</script>
+
+</body>
+</html>

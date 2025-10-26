@@ -1,55 +1,140 @@
 <!doctype html>
-<html><head>
-<meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Allergies · CampusFuel</title>
-<link rel="stylesheet" href="css/main.css">
-</head><body>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+  <meta http-equiv="Pragma" content="no-cache"/>
+  <meta http-equiv="Expires" content="0"/>
+  <title>CalPal · Allergies</title>
+
+  <link rel="stylesheet" href="css/main.css?v=17">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="js/app.js?v=17" defer></script>
+</head>
+<body> 
 
 <header class="topbar">
   <div class="inner">
-    <nav class="left-menu">
-      <a class="" href="index.html">Home</a>
-      <a class="" href="macros.html">Macros</a>
-      <a class="" href="goals.html">Goals</a>
-      <a class="" href="cost.html">Cost</a>
-      <a class="active" href="allergies.html">Allergies</a>
-      <a class="" href="weight.html">Weight</a>
-      <a class="" href="diary.html">Calories</a>
+    <div class="brand-left">
+      <img src="img/Logo_Prototype.webp" alt="CalPal Logo" class="logo">
+      <strong class="brand">CalPal</strong>
+    </div>
+
+    <nav class="nav-tabs">
+      <a href="index.html">Home</a>
+      <a href="macros.html">Macros</a>
+      <a href="goals.html">Goals</a>
+      <a href="cost.html">Cost</a>
+      <a href="allergies.html" class="active">Allergies</a>
+      <a href="weight.html">Weight</a>
+      <a href="diary.html">Calories</a>
+      
     </nav>
 
-
-    <div class="site-name">NotDetermined</div>
     <div class="right-area">
-
-
-      <span class="logo" title="Logo"></span>
-      <a class="btn btn-secondary" href="#">Profile</a>
-
-
+      <a class="btn btn-secondary" href="settings.html">Profile</a>
     </div>
   </div>
 </header>
 
-<main class="container">
-<section class="card col-12">
+<main class="container" style="max-width:900px;">
 
-  <h2>Allergy List (static)</h2>
-  <form class="form-grid mt-3" onsubmit="return demoAddAllergy(event)">
+  <section class="card" style="margin-bottom:1rem;">
+    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:1rem;align-items:flex-start;">
+      <div style="flex:1;min-width:200px;">
+        <div class="meta" style="font-size:.75rem;color:#777;margin-bottom:.25rem;">
+          Active allergies
+        </div>
 
-    <label class="full">Add allergy<input type="text" name="name" placeholder="e.g. milk"></label>
-
-
-    <div class="full"><button class="btn">Add</button></div>
-
-  </form>
-
-  <div id="allergyList" class="mt-3"></div>
-
-</section>
-</main>
+        <div style="font-size:2rem;font-weight:700;line-height:1;color:#1a1a1a;">
+          <span id="allergyCount">0</span>
+        </div>
 
 
-<footer class="footer">© 2025 NotDetermined</footer>
-<script src="js/app.js"></script>
+      </div>
 
-</body></html>
+      <div style="flex:2;min-width:240px;">
+        <div class="meta" style="font-size:.75rem;color:#777;margin-bottom:.5rem;">
+          Why this matters
+        </div>
+        <div style="font-size:.8rem;line-height:1.4;color:#333;">
+          When you add food from the campus menu or USDA search, we’ll scan for
+          common allergens (milk, soy, nuts, etc). If we detect a match, we’ll flag it.
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+      <div>
+        <h2 style="margin:0;font-size:1rem;font-weight:600;">Add an allergy / intolerance</h2>
+        <div class="meta" style="font-size:.8rem;color:#777;">
+          e.g. milk, peanuts, gluten, shellfish, soy, egg...
+        </div>
+      </div>
+    </div>
+
+    <form class="form-grid mt-3" id="allergyForm" onsubmit="return false">
+      <label class="full">Allergen / ingredient
+        <input type="text" name="name" placeholder="e.g. milk, peanuts" required>
+      </label>
+
+      <div class="full" style="margin-top:.5rem;">
+        <button class="btn" style="width:100%;max-width:220px;"
+          onclick="document.getElementById('allergyForm').dispatchEvent(new Event('submit'))">
+          Add to list
+        </button>
+      </div>
+    </form>
+
+
+  </section>
+
+  <section class="card mt-3">
+    <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+      <div>
+        <h2 style="margin:0;font-size:1rem;font-weight:600;">Your list</h2>
+        <div class="meta" style="font-size:.8rem;color:#777;">
+          Tap to remove something if you no longer want warnings for it.
+        </div>
+      </div>
+    </div>
+
+    <div id="allergyList" class="mt-3" style="display:flex;flex-wrap:wrap;gap:.5rem;">
+      <span class="pill" style="background:#fff4f2;border:1px solid #ffb3a6;color:#7b2d1e;opacity:.5;">
+        example: milk ✕
+      </span>
+    </div>
+  </section>
+
+
+  <section class="card mt-3">
+    <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+      <div>
+        <h2 style="margin:0;font-size:1rem;font-weight:600;">Recent conflict warnings</h2>
+        <div class="meta" style="font-size:.8rem;color:#777;">
+          We’ll look at what you logged in Calories and Campus and highlight risky items.
+        </div>
+      </div>
+    </div>
+
+    <div id="conflictList" class="mt-3" style="font-size:.9rem;line-height:1.4;">
+
+
+    </div>
+
+    <div style="font-size:.7rem;color:#999;margin-top:.75rem;line-height:1.4;">
+      We’ll scan only the last ~7 diary entries to keep this lightweight.
+    </div>
+  </section>
+
+</main>x
+
+<footer class="footer">© 2025 CalPal</footer>
+
+<script src="js/app.js?v=17"></script>
+</body>
+</html>
