@@ -1,0 +1,16 @@
+import unittest 
+
+class targetAndLoggedMacros(unittest.TestCase):
+
+	def test_MacroTracking({‘fat’: 77, ‘protein’: 53, ‘carbs’: 56})
+		tracker.addMacro(‘fat’, 77)
+		tracker.addMacro(‘protein’, 53)
+		tracker.addMacro(‘carbs’, 56)
+		self.assertEqual(tracker.addedMacro[‘fat’], 77)
+		self.assertEqual(tracker.addedMacro[‘protein’], 53)
+		self.assertEqual(tracker.addedMacro[‘carbs’], 56)
+		remaining = tracker.remaining()
+		self.assertEqual(remaining, {‘fat’:23,’protein’:47,’carbs’:44})
+
+if __name__ == "__main__":
+    unittest.main()
