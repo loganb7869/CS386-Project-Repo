@@ -1,0 +1,13 @@
+class MacroTracker:
+    def __init__(self, target):
+        self.target = target
+        self.addedMacro = {'fat': 0, 'protein': 0, 'carbs': 0}
+
+    def addMacro(self, macro, amount):
+        self.addedMacro[macro] += amount
+
+    def remaining(self):
+        return {
+            macro: self.target[macro] - self.addedMacro[macro]
+            for macro in self.target
+        }
