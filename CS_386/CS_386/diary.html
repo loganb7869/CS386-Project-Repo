@@ -1,0 +1,139 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+  <meta http-equiv="Pragma" content="no-cache"/>
+  <meta http-equiv="Expires" content="0"/>
+  <title>CalPal · Diary</title>
+
+  <link rel="stylesheet" href="css/main.css?v=17">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <script src="js/app.js?v=18" defer></script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="inner">
+    <div class="brand-left">
+      <img src="img/Logo_Prototype.webp" alt="CalPal Logo" class="logo">
+      <strong class="brand">CalPal</strong>
+    </div>
+
+    <nav class="nav-tabs">
+      <a href="index.html">Home</a>
+      <a href="macros.html">Macros</a>
+      <a href="goals.html">Goals</a>
+      <a href="cost.html">Cost</a>
+      <a href="allergies.html">Allergies</a>
+      <a href="weight.html">Weight</a>
+      <a href="diary.html">Calories</a>
+      
+    </nav>
+
+    <div class="right-area">
+      <a class="btn btn-secondary" href="settings.html">Profile</a>
+    </div>
+  </div>
+</header>
+
+<main class="container diary-layout">
+
+
+  
+
+  
+  <div class="grid mt-3">
+
+    <section class="card col-6">
+      <h2>Log Food</h2>
+      <div class="meta">Search by food name, then choose serving, meal & price.</div>
+
+
+      <form id="foodSearchForm" class="form-grid mt-3">
+        <label class="full">Search food
+          <input type="text" name="q" placeholder="e.g., chicken breast, rice, yogurt">
+        </label>
+        <div class="full">
+          <button class="btn">Search</button>
+        </div>
+      </form>
+
+
+      <div id="foodResults" class="mt-3"></div>
+
+
+      <form id="diaryAddForm" class="form-grid mt-3" style="display:none">
+        <div class="full section-label">Selected item</div>
+
+        <label class="full">Name
+          <input id="selFoodName" type="text" disabled>
+        </label>
+
+        <label>Meal
+          <select id="selMeal">
+            <option>Breakfast</option>
+            <option>Lunch</option>
+            <option>Dinner</option>
+            <option>Snack</option>
+          </select>
+        </label>
+
+        <label>Servings
+          <input id="selServings" type="number" step="0.1" value="1">
+        </label>
+
+        <label>Calories / serving
+          <input id="selKcal" type="number" step="1" value="0">
+        </label>
+
+        <label>Protein g / serv
+          <input id="selProt" type="number" step="0.1" value="0">
+        </label>
+
+        <label>Carbs g / serv
+          <input id="selCarb" type="number" step="0.1" value="0">
+        </label>
+
+        <label>Fat g / serv
+          <input id="selFat" type="number" step="0.1" value="0">
+        </label>
+
+        <div class="full section-label">Cost (optional)</div>
+
+        <label>Price per serving $
+          <input id="selPrice" type="number" step="0.01" value="0.00">
+        </label>
+
+        <label>Store
+          <input id="selStore" type="text" placeholder="Kroger, Walmart...">
+        </label>
+
+        <div class="full">
+          <button class="btn">Add to diary</button>
+        </div>
+      </form>
+    </section>
+
+
+    <section class="card col-6">
+      <h2>Today’s Diary</h2>
+      <div class="meta">Tap 🗑 to remove an entry.</div>
+
+      <div id="todayTotals" class="mt-2 diary-totals">
+        <div><strong id="todayTotalKcal">0</strong> kcal</div>
+        <div><strong id="todayTotalCost">$0.00</strong> spent</div>
+      </div>
+
+      <div id="diaryMeals" class="mt-3">
+
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer class="footer">© 2025 CalPal</footer>
+
+</body>
+</html>

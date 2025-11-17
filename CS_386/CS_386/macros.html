@@ -1,0 +1,214 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+  <meta http-equiv="Pragma" content="no-cache"/>
+  <meta http-equiv="Expires" content="0"/>
+  <title>CalPal · Macro Calculator</title>
+
+  <link rel="stylesheet" href="css/main.css?v=17">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="js/app.js?v=18" defer></script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="inner">
+    <div class="brand-left">
+      <img src="img/Logo_Prototype.webp" alt="CalPal Logo" class="logo">
+      <strong class="brand">CalPal</strong>
+    </div>
+
+    <nav class="nav-tabs">
+      <a href="index.html">Home</a>
+      <a href="macros.html" class="active">Macros</a>
+      <a href="goals.html">Goals</a>
+      <a href="cost.html">Cost</a>
+      <a href="allergies.html">Allergies</a>
+      <a href="weight.html">Weight</a>
+      <a href="diary.html">Calories</a>
+    </nav>
+
+    <div class="right-area">
+      <a class="btn btn-secondary" href="settings.html">Profile</a>
+    </div>
+  </div>
+</header>
+
+<main class="container" style="max-width:900px;">
+
+  <section class="card" style="margin-bottom:1rem;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;">
+      <div>
+        <h1 style="margin:0;font-size:1.1rem;font-weight:600;">Daily Targets</h1>
+        <div class="meta" style="font-size:.8rem;color:#777;">Find your daily macro and calorie intake</div>
+      </div>
+      <div style="font-size:.8rem;color:#777;line-height:1.4;">
+        <div>Calories: <strong id="cur_calories">—</strong> kcal</div>
+        <div>Protein: <strong id="cur_protein">—</strong> g</div>
+        <div>Carbs:   <strong id="cur_carbs">—</strong> g</div>
+        <div>Fat:     <strong id="cur_fat">—</strong> g</div>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:.75rem;">
+      <div>
+        <h2 style="margin:0;font-size:1rem;font-weight:600;line-height:1.2;">Your details</h2>
+        <div class="meta" style="font-size:.8rem;color:#777;">BMI, BMR (Mifflin–St Jeor), and TDEE</div>
+      </div>
+    </div>
+
+    <form id="macroCalc" class="form-grid mt-3">
+
+      <label>Sex
+        <select name="sex">
+          <option value="male">male</option>
+          <option value="female">female</option>
+        </select>
+      </label>
+
+
+      <label>Age (years)
+        <input type="number" name="age" placeholder="20">
+      </label>
+
+
+      <label>Height (inches)
+        <input type="number" name="height_in" placeholder="70">
+      </label>
+
+
+      <label>Weight (lb)
+        <input type="number" name="weight_lb" placeholder="180">
+      </label>
+
+
+      <label class="full">Activity level
+        <select name="activity">
+          <option value="sedentary">Sedentary (little/no exercise)</option>
+          <option value="light">Light (1–3x/week)</option>
+          <option value="moderate" selected>Moderate (3–5x/week)</option>
+          <option value="active">Active (6–7x/week)</option>
+          <option value="very_active">Very active (hard training)</option>
+        </select>
+      </label>
+
+
+      <div class="full" style="display:flex;flex-wrap:wrap;align-items:center;gap:1rem;">
+        <div style="font-weight:600;">Main goal</div>
+        <label style="font-size:.9rem;font-weight:500;">
+          <input type="radio" name="goal" value="maintain" checked> Maintain
+        </label>
+        <label style="font-size:.9rem;font-weight:500;">
+          <input type="radio" name="goal" value="cut"> Cut
+        </label>
+        <label style="font-size:.9rem;font-weight:500;">
+          <input type="radio" name="goal" value="bulk"> Bulk
+        </label>
+      </div>
+
+
+      <div class="full" style="margin-top:1rem;">
+        <button class="btn" style="width:100%;max-width:220px;">Calculate</button>
+      </div>
+    </form>
+
+
+    <div id="macroStep1" class="mt-3 card" style="display:none; background:#fafafa;border-radius:.75rem;">
+      <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+        <div>
+          <h3 style="margin:0;font-size:.95rem;font-weight:600;">Your baseline</h3>
+          <p class="mt-2" style="margin:.5rem 0 0;font-size:.85rem;line-height:1.4;">
+            BMI: <strong id="r_bmi">—</strong> <span id="r_bmi_cat" style="color:#777;"></span><br>
+            BMR: <strong id="r_bmr">—</strong> kcal/day<br>
+            TDEE: <strong id="r_tdee">—</strong> kcal/day
+          </p>
+        </div>
+
+        <div style="flex:1;min-width:200px;">
+          <div style="font-size:.8rem;color:#777;font-weight:600;letter-spacing:.05em;text-transform:uppercase;">
+           Pick intensity
+          </div>
+          <div id="intensityOptions" class="mt-2" style="font-size:.85rem;line-height:1.4;">
+
+          </div>
+          <div style="font-size:.7rem;color:#999;margin-top:.5rem;">
+            This chooses how aggressive your cut/bulk/maintenance is.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <section id="macroResults" class="card mt-3" style="display:none;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;">
+      <div>
+        <h2 style="margin:0;font-size:1rem;font-weight:600;line-height:1.2;">Your daily targets</h2>
+      </div>
+      <div style="text-align:right;font-size:.8rem;color:#777;line-height:1.4;min-width:140px;">
+        <div>Calories: <strong id="r_target">—</strong></div>
+        <div>Protein: <strong id="r_protein_g">—</strong> g</div>
+        <div>Carbs:   <strong id="r_carbs_g">—</strong> g</div>
+        <div>Fat:     <strong id="r_fat_g">—</strong> g</div>
+      </div>
+    </div>
+
+
+    <div style="display:flex;flex-wrap:wrap;align-items:flex-start;gap:2rem;margin-top:1.5rem;">
+      <div style="flex:0 0 auto;">
+        <div class="rings-row" style="display:flex; gap:1.5rem; flex-wrap:wrap; justify-content:center; margin-top:.5rem;">
+          <div class="ring-block" style="text-align:center;">
+            <div class="ring" id="ringProtein" style="--pct:0; --clr:#8c1f13; --size:110px;"></div>
+            <div class="meta-center" style="text-align:center;font-size:.85rem;margin-top:.5rem;">Protein</div>
+          </div>
+          <div class="ring-block" style="text-align:center;">
+            <div class="ring" id="ringCarbs" style="--pct:0; --clr:#d8902a; --size:110px;"></div>
+            <div class="meta-center" style="text-align:center;font-size:.85rem;margin-top:.5rem;">Carbs</div>
+          </div>
+          <div class="ring-block" style="text-align:center;">
+            <div class="ring" id="ringFat" style="--pct:0; --clr:#2f1b12; --size:110px;"></div>
+            <div class="meta-center" style="text-align:center;font-size:.85rem;margin-top:.5rem;">Fat</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex:1;min-width:200px;">
+        <div style="background:#fafafa;border-radius:.75rem;padding:1rem;font-size:.85rem;line-height:1.5;">
+          <div style="font-size:.75rem;color:#777;font-weight:600;letter-spacing:.05em;text-transform:uppercase;">What this means</div>
+          <p style="margin:.5rem 0 0;">
+            • Protein supports muscle recovery and keeps you full.<br>
+            • Carbs fuel training and focus.<br>
+            • Fat keeps hormones and mood stable.
+          </p>
+
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">© 2025 CalPal</footer>
+
+
+<script>
+
+document.addEventListener('DOMContentLoaded', () => {
+  try {
+    const s = JSON.parse(localStorage.getItem('cf')) || {};
+    const t = s.targets || {};
+    document.getElementById('cur_calories').textContent = t.calories ?? '—';
+    document.getElementById('cur_protein').textContent  = t.proteinG ?? '—';
+    document.getElementById('cur_carbs').textContent    = t.carbsG ?? '—';
+    document.getElementById('cur_fat').textContent      = t.fatG ?? '—';
+  } catch {}
+});
+</script>
+
+</body>
+</html>
