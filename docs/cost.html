@@ -38,11 +38,11 @@
   </div>
 </header>
 
-<main class="container" style="max-width:900px;">
+<main class="container max-w-900">
 
 
   <section class="card" style="margin-bottom:1rem;">
-    <div style="display:flex;flex-wrap:wrap;gap:1.5rem;align-items:flex-start;justify-content:space-between;">
+    <div class="flex-wrap-gap align-start">
       
       <div style="flex:1;min-width:180px;">
         <div class="meta" style="font-size:.75rem;color:#777;margin-bottom:.25rem;">
@@ -121,14 +121,11 @@
       </label>
 
       <label>Category
-        <input name="cat" type="text" placeholder="e.g. Protein / Meal / Snack">
+        <input name="category" type="text" placeholder="e.g. Protein / Meal / Snack">
       </label>
 
       <div class="full" style="margin-top:.5rem;">
-        <button class="btn" style="width:100%;max-width:220px;"
-          onclick="document.getElementById('costForm').dispatchEvent(new Event('submit'))">
-          Add to log
-        </button>
+        <button id="addCostBtn" type="submit" class="btn btn-full">Add to log</button>
       </div>
     </form>
 
@@ -163,18 +160,7 @@
             <th style="text-align:right;">Total $</th>
           </tr>
         </thead>
-        <tbody id="costTableBody">
-
-          <tr style="opacity:.5;">
-            <td>2025-10-24</td>
-            <td>Chicken Bowl</td>
-            <td>Campus Dining</td>
-            <td>Meal</td>
-            <td style="text-align:right;">1</td>
-            <td style="text-align:right;">$8.50</td>
-            <td style="text-align:right;">$8.50</td>
-          </tr>
-        </tbody>
+        <tbody id="costTableBody"></tbody>
       </table>
     </div>
 
