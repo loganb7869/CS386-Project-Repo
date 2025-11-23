@@ -485,74 +485,164 @@ function extractMacros(food)
 
 }
 
-function wireDiaryEnhanced() 
+function wireDiaryEnhanced() {
+  // Grab all the elements we rely on from diary.html
+  const searchForm   = $("#foodSearchForm");
+  const resultsBox   = $("#foodResults");
+  const addForm      = $("#diaryAddForm");
+  const diaryMealsEl = $("#diaryMeals");
+  const totalKcalEl  = $("#todayTotalKcal");
+  const totalCostEl  = $("#todayTotalCost");
 
-{
-  const searchForm = $("#foodSearchForm");
-  const resultsBox = $("#foodResults");
-  const addForm    = $("#diaryAddForm");
-  const tableBody  = $("#diaryTable tbody");
-  if (!searchForm || !resultsBox || !addForm || !tableBody) return;
+  // if we’re not on diary.html, bail
+  if (!searchForm || !resultsBox || !addForm || !diaryMealsEl) return;
 
+  // make sure state shape exists
   state.diary = state.diary || { entries: [], todayKcal: 0 };
   state.cost  = state.cost  || { items: [] };
 
+  // this will hold whatever item the user clicked "Choose" on
   let pending = null;
 
-  const renderDiary = () => {
-    tableBody.innerHTML = state.diary.entries.slice().reverse().map(e => `
-      <tr>
-        <td>${e.meal || "—"}</td>
-        <td>${e.food}</td>
-        <td>${e.servings}</td>
-        <td>${e.kcal}</td>
-        <td>${e.costUsd ? `$${(+e.costUsd).toFixed(2)}` : "—"}</td>
-      </tr>
-    `).join("");
-  };
+  // helper: render the right side ("Today's Diary")
+  function renderDiary() {
+    const todayISO = new Date().toISOString().slice(0,10);
 
+    // filter just today's entries
+    const todays = state.diary.entries.filter(e => {
+      return !e.date || e.date === todayISO;
+    });
 
+    // group by meal (Breakfast / Lunch / etc.)
+    const byMeal = {};
+    for (const e of todays) {
+      const mealName = e.meal || "Other";
+      if (!byMeal[mealName]) byMeal[mealName] = [];
+      byMeal[mealName].push(e);
+    }
 
+    // build the HTML for the diaryMealsEl
+    let html = "";
+    Object.keys(byMeal).forEach(mealName => {
+      html += `
+        <div class="meal-block" style="margin-bottom:1rem;">
+          <div style="font-weight:600;margin-bottom:.5rem;">${mealName}</div>
+          <div class="meal-items" style="display:flex;flex-direction:column;gap:.5rem;">
+      `;
 
+      byMeal[mealName].forEach((entry, idx) => {
+        html += `
+          <div class="card" style="padding:.75rem;display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;">
+            <div style="font-size:.9rem;line-height:1.4;">
+              <div style="font-weight:600;">${entry.food}</div>
+              <div class="meta" style="font-size:.8rem;color:#777;">
+                ${entry.servings}× • ${entry.kcal} kcal
+                ${entry.costUsd ? `• $${(+entry.costUsd).toFixed(2)}` : ""}
+              </div>
+            </div>
+            <button class="btn btn-sm" data-del="${mealName}::${idx}" style="background:#eee;color:#333;">🗑</button>
+          </div>
+        `;
+      });
 
+      html += `</div></div>`;
+    });
+
+    // if no food logged yet:
+    if (!todays.length) {
+      html = `<div class="meta" style="color:#777;font-size:.85rem;">Nothing logged yet today.</div>`;
+    }
+
+    diaryMealsEl.innerHTML = html;
+
+    // update totals at the top right
+    const totalKcal = todays.reduce((sum,e) => sum + (e.kcal || 0), 0);
+    let totalCost = todays.reduce((sum,e) => {
+      return sum + (Number(e.costUsd) || 0);
+    }, 0);
+
+    // write totals in UI
+    if (totalKcalEl) totalKcalEl.textContent = totalKcal.toString();
+    if (totalCostEl) totalCostEl.textContent = `$${totalCost.toFixed(2)}`;
+
+    // wire delete buttons
+    diaryMealsEl.querySelectorAll("[data-del]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const key = btn.getAttribute("data-del"); // "Breakfast::0"
+        const [mealName, idxStr] = key.split("::");
+        const idx = parseInt(idxStr,10);
+
+        // remove the idx-th entry in that mealName, *but only among today's entries for that meal*
+        // Easiest: rebuild today's list without that one
+        let seen = 0;
+        state.diary.entries = state.diary.entries.filter(e => {
+          const sameDay  = (!e.date || e.date === todayISO);
+          const sameMeal = (e.meal || "Other") === mealName;
+          if (sameDay && sameMeal) {
+            // if this is the one we're deleting, skip it once
+            if (seen === idx) {
+              seen++;
+              return false;
+            }
+            seen++;
+            return true;
+          }
+          return true;
+        });
+
+        // update today's kcal cache
+        state.diary.todayKcal = getTodayCaloriesTotal();
+        save(state);
+        renderDiary();
+      });
+    });
+  }
+
+  // SEARCH HANDLER
   searchForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const q = new FormData(searchForm).get("q")?.toString().trim();
+
     resultsBox.innerHTML = "";
     addForm.style.display = "none";
     pending = null;
+
     if (!q) return;
 
     resultsBox.innerHTML = `<div class="meta">Searching…</div>`;
-    try 
-    
-    {
+    try {
       const data = await fdcSearch(q, 12);
       const foods = (data.foods || []).map(extractMacros);
 
-      if (!foods.length) 
-        
-        {
+      if (!foods.length) {
         resultsBox.innerHTML = `<div class="meta">No results.</div>`;
         return;
       }
 
+      // Show results list w/ "Choose"
       resultsBox.innerHTML = foods.map((f, i) => `
         <div class="card" style="margin-bottom:8px; display:flex; align-items:center; justify-content:space-between; gap:12px;">
           <div>
             <div><strong>${f.label}</strong></div>
-            <div class="meta">${f.servingDesc || "per serving"}</div>
-            <div class="meta">~ ${f.kcalPerServing} kcal • P ${f.protPerServing}g • C ${f.carbPerServing}g • F ${f.fatPerServing}g</div>
+            <div class="meta" style="font-size:.8rem;color:#777;">
+              ${f.servingDesc || "per serving"}
+            </div>
+            <div class="meta" style="font-size:.8rem;color:#777;">
+              ~ ${f.kcalPerServing} kcal •
+              P ${f.protPerServing}g •
+              C ${f.carbPerServing}g •
+              F ${f.fatPerServing}g
+            </div>
           </div>
           <button class="btn btn-sm" data-pick="${i}">Choose</button>
         </div>
       `).join("");
 
+      // Wire "Choose" buttons → fill the hidden add form
       resultsBox.querySelectorAll("[data-pick]").forEach(btn => {
         btn.addEventListener("click", () => {
           const i = +btn.dataset.pick;
           pending = foods[i];
-
 
           $("#selFoodName").value = pending.label;
           $("#selServings").value = 1;
@@ -561,29 +651,17 @@ function wireDiaryEnhanced()
           $("#selCarb").value     = pending.carbPerServing;
           $("#selFat").value      = pending.fatPerServing;
 
-
           addForm.style.display = "grid";
           addForm.scrollIntoView({ behavior: "smooth", block: "center" });
         });
-
-
       });
-    } 
-    
-    catch (err) 
-    
-    {
-
+    } catch (err) {
       console.error(err);
       resultsBox.innerHTML = `<div class="meta">Search failed. Try again.</div>`;
-
     }
-
   });
 
-
-
-
+  // ADD FOOD HANDLER
   addForm.addEventListener("submit", (e) => {
     e.preventDefault();
     if (!pending) return;
@@ -598,11 +676,8 @@ function wireDiaryEnhanced()
     const store    = $("#selStore").value || "";
     const todayISO = new Date().toISOString().slice(0,10);
 
-
-
-
-
     const kcal = Math.round(kcalPer * servings);
+
     const entry = {
       date: todayISO,
       meal,
@@ -614,37 +689,39 @@ function wireDiaryEnhanced()
         carbsG:   +(carbPer * servings).toFixed(1),
         fatG:     +(fatPer  * servings).toFixed(1),
       },
-
       costUsd: +(pricePer * servings).toFixed(2),
       store
     };
 
+    // save in diary
     state.diary.entries.push(entry);
-
+    // keep today's kcal handy
     state.diary.todayKcal = getTodayCaloriesTotal();
 
-    if (entry.costUsd > 0) 
-      
-      {
+    // also log spend into cost tracker if you added a price
+    if (entry.costUsd > 0) {
       state.cost.items.push({
         date: todayISO,
         name: entry.food,
-        unitCost: pricePer,
         qty: servings,
+        unitCost: pricePer,
         store
       });
     }
 
     save(state);
+
+    // reset UI
     addForm.reset();
     addForm.style.display = "none";
     resultsBox.innerHTML = "";
     pending = null;
+
+    // re-render the right panel
     renderDiary();
   });
 
-
-
+  // Initial render for when you load the page
   renderDiary();
 }
 
@@ -887,96 +964,208 @@ function wireStorePricing()
   });
 }
 
-function wireWeight() 
+function wireWeight() {
+  const form    = $("#weightForm");
+  const tableEl = $("#weightsTable");      // <tbody id="weightsTable">
+  const chartEl = $("#weightLine");        // <canvas id="weightLine">
+  const curEl   = $("#curWeightVal");      // top summary: current weight
+  const startEl = $("#startWeightVal");    // top summary: start weight
+  const diffEl  = $("#diffWeightVal");     // top summary: change
 
+  // if we're not on weight.html, bail
+  if (!form || !tableEl || !chartEl || !curEl || !startEl || !diffEl) return;
 
-{
-  const form   = $("#weightForm");
-  const table  = $("#weightsTable tbody");
-  const chartEl= $("#weightLine");
-  if (!form || !table) return;
-
+  // make sure state exists
   state.weightLogs = state.weightLogs || [];
 
-  const render = () => {
+  // ---- render() draws table, chart, and summary ----
+  function render() {
+    const logs = state.weightLogs;
 
-    table.innerHTML = state.weightLogs.slice().reverse().map(w =>
-      `<tr><td>${w.date}</td><td>${w.value}</td></tr>`
-    ).join("");
+    // 1) summary (current / start / change)
+    if (logs.length === 0) {
+      curEl.textContent   = "— kg";
+      startEl.textContent = "— kg";
+      diffEl.textContent  = "— kg";
+    } else {
+      // sort by date ascending so index 0 = first, last = most recent
+      const sorted = logs.slice().sort((a,b) => (a.date || "").localeCompare(b.date || ""));
+      const first  = sorted[0];
+      const last   = sorted[sorted.length - 1];
 
+      const firstVal = Number(first.value) || 0;
+      const lastVal  = Number(last.value)  || 0;
+      const delta    = lastVal - firstVal;
 
+      curEl.textContent   = lastVal.toFixed(1) + " kg";
+      startEl.textContent = firstVal.toFixed(1) + " kg";
+
+      // show + or – sign on change
+      const sign = delta >= 0 ? "+" : "";
+      diffEl.textContent  = sign + delta.toFixed(1) + " kg";
+    }
+
+    // 2) history table (newest first)
+    if (logs.length === 0) {
+      tableEl.innerHTML = `<tr><td colspan="2" style="color:#777;font-size:.85rem;">No weight logged yet.</td></tr>`;
+    } else {
+      const newestFirst = logs.slice().sort((a,b) => (b.date || "").localeCompare(a.date || ""));
+      tableEl.innerHTML = newestFirst.map(w => `
+        <tr>
+          <td>${w.date || ""}</td>
+          <td>${(w.value != null ? w.value : "")} kg</td>
+        </tr>
+      `).join("");
+    }
+
+    // 3) trend chart (full series in chronological order)
     if (chartEl) {
       ensureChartJs(() => {
-        const labels = state.weightLogs.map(w => w.date);
-        const vals   = state.weightLogs.map(w => w.value);
-
-
-
         const ctx = chartEl.getContext("2d");
 
+        // destroy any existing chart on this canvas so we don't layer lines
+        if (chartEl._calpalChart) {
+          chartEl._calpalChart.destroy();
+        }
 
+        const sorted = state.weightLogs.slice().sort((a,b) => (a.date || "").localeCompare(b.date || ""));
+        const labels = sorted.map(w => w.date || "");
+        const vals   = sorted.map(w => Number(w.value) || 0);
 
-        new Chart(ctx, {
+        // eslint-disable-next-line no-undef
+        chartEl._calpalChart = new Chart(ctx, {
           type: "line",
           data: {
             labels,
             datasets: [{
               data: vals,
-              tension: .35,
+              tension: 0.35,
               borderColor: "#7b2d1e",
-              pointRadius: 3
+              pointRadius: 3,
+              borderWidth: 2,
+              fill: false
             }]
           },
           options: {
-            plugins: { legend: { display: false } }
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { display: true, ticks: { maxRotation: 0, minRotation: 0, autoSkip: true } },
+              y: { display: true }
+            }
           }
         });
       });
     }
-  };
+  }
 
-
-
-
+  // ---- handle form submit ----
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     const fd = new FormData(form);
-    const row = {
-      date: fd.get("date") || new Date().toISOString().slice(0,10),
-      value: parseFloat(fd.get("weight")) || 0
-    };
-    state.weightLogs.push(row);
+
+    const dateStr = fd.get("date") || new Date().toISOString().slice(0,10);
+    const valNum  = parseFloat(fd.get("weight"));
+
+    if (!valNum || isNaN(valNum)) {
+      alert("Enter a weight.");
+      return;
+    }
+
+    // push new entry
+    state.weightLogs.push({
+      date: dateStr,
+      value: valNum
+    });
+
+    // save to localStorage
     save(state);
+
+    // reset the form UI
     form.reset();
+
+    // redraw UI
     render();
   });
 
+  // initial paint on page load
   render();
 }
 
 
 
 
-function wireCost() 
+function wireCost() {
+  const form           = $("#costForm");
+  const outCard        = $("#costOut");
+  const tableBody      = $("#costTableBody");
 
+  const mtdSpendNumber = $("#mtdSpendNumber");
+  const avgPerDayEl    = $("#avgPerDay");
+  const spendPill      = $("#todaySpendPill");
+  const remainPill     = $("#todayRemainPill");
 
-{
-  const form = $("#costForm");
-  const out  = $("#costOut");
-  if (!form || !out) return;
+  if (!form || !outCard || !tableBody) return; // not on cost.html
 
-  state.cost = state.cost || { items: [] };
+  state.cost        = state.cost        || { items: [] };
+  state.budgetDaily = state.budgetDaily || 20;
 
-  const render = () => {
-    const { mtd } = getMonthSpendStats();
-    out.innerHTML = `<div class="card">
-      <div class="meta">Estimated spend this month</div>
-      <div style="font-size:32px;font-weight:800">$${mtd.toFixed(2)}</div>
-    </div>`;
-  };
+  function renderTopStats() {
+    const monthStats   = getMonthSpendStats(); // uses state.cost + diary costs
+    const todaySpend   = getTodaySpend();      // money spent today
+    const dailyBudget  = getDailyBudgetGoal(); // from state.budgetDaily
 
+    // Month to date dollar total
+    if (mtdSpendNumber) {
+      mtdSpendNumber.textContent = "$" + monthStats.mtd.toFixed(2);
+    }
 
+    // Avg per day
+    if (avgPerDayEl) {
+      avgPerDayEl.textContent = "$" + monthStats.avg.toFixed(2) + " / day";
+    }
 
+    // Today pills
+    if (spendPill) {
+      spendPill.textContent = "$" + todaySpend.toFixed(2) + " spent today";
+    }
+    if (remainPill) {
+      const left = Math.max(0, dailyBudget - todaySpend);
+      remainPill.textContent = "$" + left.toFixed(2) + " left";
+    }
+
+    // also mirror a quick summary card
+    outCard.innerHTML = `
+      <div class="card">
+        <div class="meta">Estimated spend this month</div>
+        <div style="font-size:32px;font-weight:800">$${monthStats.mtd.toFixed(2)}</div>
+        <div class="meta" style="margin-top:.5rem;font-size:.8rem;color:#777;">
+          Avg/day $${monthStats.avg.toFixed(2)}
+        </div>
+      </div>
+    `;
+  }
+
+  function renderTable() {
+    // newest first
+    const rows = state.cost.items.slice().reverse().map(item => {
+      const total = (item.unitCost || 0) * (item.qty || 0);
+      return `
+        <tr>
+          <td>${item.date || ""}</td>
+          <td>${item.name || ""}</td>
+          <td>${item.store || ""}</td>
+          <td>${item.cat || ""}</td>
+          <td style="text-align:right;">${item.qty ?? ""}</td>
+          <td style="text-align:right;">$${(item.unitCost||0).toFixed(2)}</td>
+          <td style="text-align:right;">$${total.toFixed(2)}</td>
+        </tr>
+      `;
+    }).join("");
+
+    tableBody.innerHTML = rows || `
+      <tr><td colspan="7" style="color:#777;font-size:.85rem;">No purchases yet.</td></tr>
+    `;
+  }
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -990,53 +1179,74 @@ function wireCost()
       cat: fd.get("cat") || ""
     };
 
-
-
     state.cost.items.push(row);
     save(state);
+
     form.reset();
-    render();
+    renderTable();
+    renderTopStats();
   });
 
-
-
-
-  render();
+  renderTable();
+  renderTopStats();
 }
 
 
-function wireAllergies() 
-
-
-
-{
+function wireAllergies() {
   const form = $("#allergyForm");
   const list = $("#allergyList");
-  if (!form || !list) return;
+  const countEl = $("#allergyCount");
+  if (!form || !list) return; // not on allergies.html
 
   state.allergies = state.allergies || [];
 
-  const render = () => {
-    list.innerHTML = state.allergies
-      .map(a => `<span class="pill" style="margin-right:8px">${a}</span>`)
-      .join("");
-  };
+  function render() {
+    // update count at top
+    if (countEl) countEl.textContent = state.allergies.length.toString();
 
+    // build pills with remove affordance
+    list.innerHTML = state.allergies.map((name, idx) => `
+      <button
+        class="pill"
+        data-del="${idx}"
+        style="
+          background:#fff4f2;
+          border:1px solid #ffb3a6;
+          color:#7b2d1e;
+          font-size:.8rem;
+          line-height:1.2;
+          border-radius:999px;
+          padding:.4rem .6rem;
+          cursor:pointer;
+        "
+      >
+        ${name} ✕
+      </button>
+    `).join("") || `
+      <span class="meta" style="font-size:.8rem;color:#777;">No allergies logged yet.</span>
+    `;
 
-
-
+    // attach delete listeners
+    list.querySelectorAll("[data-del]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const i = parseInt(btn.getAttribute("data-del"),10);
+        state.allergies.splice(i,1);
+        save(state);
+        render();
+      });
+    });
+  }
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
-    const name = (new FormData(form).get("name") || "").trim();
+    const fd = new FormData(form);
+    const name = (fd.get("name") || "").trim();
     if (!name) return;
     state.allergies.push(name);
     save(state);
     form.reset();
     render();
   });
-
-
 
   render();
 }
@@ -1163,6 +1373,94 @@ function suggestAdjustments(bmi, tdee, goal)
 
 
 }
+function wireGoals() {
+  const form = $("#goalsForm");
+  const tableBody = $("#goalsTable tbody");
+
+  const curWeightEl   = $("#g_curWeight");
+  const tgtWeightEl   = $("#g_tgtWeight");
+  const dailyBudgetEl = $("#g_dailyBudget");
+  const todaySpendEl  = $("#g_todaySpend");
+
+  if (!form || !tableBody) return; // not on goals.html
+
+  // make sure state pieces exist
+  state.goals = state.goals || [];          // list of {type, target, unit, date}
+  state.cost  = state.cost  || { items: [] };
+  state.weightLogs = state.weightLogs || [];
+  state.budgetDaily = state.budgetDaily || 20;
+
+  // helper: render summary top row
+  function renderSummary() {
+    // current weight = latest logged weight
+    let latestWeight = "—";
+    if (state.weightLogs.length) {
+      latestWeight = state.weightLogs[state.weightLogs.length - 1].value;
+    }
+
+    // most recent weight goal
+    let lastWeightGoal = "—";
+    const weightGoals = state.goals.filter(g => g.type === "weight");
+    if (weightGoals.length) {
+      lastWeightGoal = weightGoals[weightGoals.length - 1].target + " " +
+                       (weightGoals[weightGoals.length - 1].unit || "");
+    }
+
+    // most recent budget goal
+    let lastBudgetGoal = state.budgetDaily || 20;
+
+    // today spend
+    const spendToday = getTodaySpend();
+
+    if (curWeightEl)   curWeightEl.textContent   = latestWeight;
+    if (tgtWeightEl)   tgtWeightEl.textContent   = lastWeightGoal;
+    if (dailyBudgetEl) dailyBudgetEl.textContent = "$" + Number(lastBudgetGoal).toFixed(2);
+    if (todaySpendEl)  todaySpendEl.textContent  = "$" + spendToday.toFixed(2);
+  }
+
+  // helper: render table of goals
+  function renderTable() {
+    // newest first => reverse copy
+    const rows = state.goals.slice().reverse().map(g => `
+      <tr>
+        <td>${g.type}</td>
+        <td>${g.target}</td>
+        <td>${g.unit}</td>
+        <td>${g.date || "—"}</td>
+      </tr>
+    `).join("");
+
+    tableBody.innerHTML = rows || `
+      <tr><td colspan="4" style="color:#777;font-size:.85rem;">No goals yet.</td></tr>`;
+  }
+
+  // on submit, add goal
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+
+    const type   = fd.get("type");     // "weight" or "budget"
+    const target = fd.get("target");   // number
+    const unit   = fd.get("unit");     // "kg" or "USD"
+    const date   = fd.get("date");     // deadline
+
+    // save the goal
+    state.goals.push({ type, target, unit, date });
+
+    // special case: if they set a budget goal, update state.budgetDaily
+    if (type === "budget") {
+      state.budgetDaily = parseFloat(target) || state.budgetDaily;
+    }
+
+    save(state);
+    form.reset();
+    renderSummary();
+    renderTable();
+  });
+
+  renderSummary();
+  renderTable();
+}
 
 function wireMacrosForm() {
   const form = $("#macroCalc");
@@ -1178,35 +1476,30 @@ function wireMacrosForm() {
     e.preventDefault();
     const fd = new FormData(form);
 
+    // read values from the form (matches macros.html)
     const sex        = fd.get("sex");
     const age        = +fd.get("age") || 0;
-
-
-    let weightVal    = +fd.get("weight") || 0;
-    let heightVal    = +fd.get("height_in") || 0;
-
-    const hUnit      = fd.get("height_unit");
-    const wUnit      = fd.get("weight_unit");
-
+    const height_in  = +fd.get("height_in") || 0;
+    const weight_lb  = +fd.get("weight_lb") || 0;
     const activity   = fd.get("activity");
     const goal       = fd.get("goal") || "maintain";
 
+    // convert to metric for the formulas
+    const height_cm = height_in * 2.54;
+    const weight_kg = weight_lb * 0.45359237;
 
-    const height_cm  = (hUnit === "in") ? (heightVal * 2.54)       : heightVal;
-    const weight_kg  = (wUnit === "lb") ? (weightVal * 0.45359237) : weightVal;
-
-
+    // basic validation
     if (!height_cm || !weight_kg || !age) {
       alert("Please fill age, height and weight.");
       return;
     }
 
-
+    // BMR (Mifflin–St Jeor)
     const bmr = (sex === "male")
-      ? 10*weight_kg + 6.25*height_cm - 5*age + 5
-      : 10*weight_kg + 6.25*height_cm - 5*age - 161;
+      ? 10 * weight_kg + 6.25 * height_cm - 5 * age + 5
+      : 10 * weight_kg + 6.25 * height_cm - 5 * age - 161;
 
-
+    // activity multiplier -> TDEE
     const factor = ({
       sedentary:    1.2,
       light:        1.375,
@@ -1217,10 +1510,10 @@ function wireMacrosForm() {
 
     const tdee = bmr * factor;
 
-
+    // BMI
     const bmi = weight_kg / Math.pow(height_cm / 100, 2);
 
-
+    // fill "Your baseline"
     r("r_bmi").textContent     = bmi.toFixed(2);
     r("r_bmi_cat").textContent = `(${
       bmi < 18.5 ? "Underweight" :
@@ -1230,6 +1523,7 @@ function wireMacrosForm() {
     r("r_bmr").textContent     = Math.round(bmr);
     r("r_tdee").textContent    = Math.round(tdee);
 
+    // build intensity choices for Step 2
     const suggestions = suggestAdjustments(bmi, tdee, goal);
     optionsHost.innerHTML = `
       <h4>Choose your intensity</h4>
@@ -1243,22 +1537,22 @@ function wireMacrosForm() {
     baseBox.style.display = "block";
     results.style.display = "none";
 
-
+    // when they click one of the intensity buttons…
     optionsHost.querySelectorAll("[data-target]").forEach(btn => {
       btn.addEventListener("click", (ev) => {
         ev.preventDefault();
         const target = +btn.dataset.target;
 
-
+        // figure out grams of protein/carbs/fat for that calorie target
         const split  = macroSplitAuto(weight_kg, goal, target);
 
-
+        // update Step 3 numbers
         r("r_target").textContent    = target;
         r("r_protein_g").textContent = split.proteinG;
         r("r_carbs_g").textContent   = split.carbsG;
         r("r_fat_g").textContent     = split.fatG;
 
-
+        // save to localStorage so Home / Profile can read it
         state.targets = {
           calories: target,
           proteinG: split.proteinG,
@@ -1267,7 +1561,7 @@ function wireMacrosForm() {
         };
         save(state);
 
-
+        // update the 3 rings
         const calFromProtein = split.proteinG * 4;
         const calFromCarb    = split.carbsG   * 4;
         const calFromFat     = split.fatG     * 9;
@@ -1284,24 +1578,22 @@ function wireMacrosForm() {
         if (ringCarbs)   ringCarbs.style.setProperty("--pct", pctCarb.toFixed(1));
         if (ringFat)     ringFat.style.setProperty("--pct", pctFat.toFixed(1));
 
+        // reveal Step 3
         results.style.display = "block";
         results.scrollIntoView({ behavior: "smooth", block: "start" });
       });
     });
   });
 
-
-  if (state.targets && state.targets.calories && $("#macroResults")) 
-    
-    {
-
-
+  // PRELOAD: if you already have targets saved from a previous run,
+  // show Step 3 on page load
+  if (state.targets && state.targets.calories && $("#macroResults")) {
     const { calories, proteinG, carbsG, fatG } = state.targets;
+
     r("r_target").textContent    = calories;
     r("r_protein_g").textContent = proteinG;
     r("r_carbs_g").textContent   = carbsG;
     r("r_fat_g").textContent     = fatG;
-
 
     const calFromProtein = proteinG * 4;
     const calFromCarb    = carbsG   * 4;
@@ -1321,7 +1613,6 @@ function wireMacrosForm() {
 
     $("#macroResults").style.display = "block";
   }
-
 }
 
 function renderSettingsPreview() 
@@ -1375,6 +1666,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Macros calculator page
   wireMacrosForm();
+
+  // Goals page
+  wireGoals();
 
   // Settings page preview
   renderSettingsPreview();

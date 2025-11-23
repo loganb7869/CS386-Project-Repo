@@ -10,7 +10,7 @@
 
   <link rel="stylesheet" href="css/main.css?v=17">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="js/app.js?v=17" defer></script>
+  <script src="js/app.js?v=18" defer></script>
 </head>
 <body>
 
@@ -29,118 +29,122 @@
       <a href="allergies.html">Allergies</a>
       <a href="weight.html" class="active">Weight</a>
       <a href="diary.html">Calories</a>
-      
     </nav>
 
     <div class="right-area">
-      <a class="btn btn-secondary" href="calpal/settings.html">Profile</a>
+      <a class="btn btn-secondary" href="settings.html">Profile</a>
     </div>
   </div>
 </header>
 
-<main class="container" style="max-width:1000px;">
+<main class="container" style="max-width:900px;">
 
-
+  <!-- Top summary card -->
   <section class="card" style="margin-bottom:1rem;">
-    <div style="display:flex;flex-wrap:wrap;gap:1.5rem;justify-content:space-between;align-items:flex-start;">
+    <div style="display:flex;flex-wrap:wrap;gap:1.5rem;align-items:flex-start;justify-content:space-between;">
 
-
-      <div style="flex:1;min-width:220px;">
+      <div style="flex:1;min-width:160px;">
         <div class="meta" style="font-size:.75rem;color:#777;margin-bottom:.25rem;">
           Current weight
         </div>
-        <div style="font-size:2rem;font-weight:700;line-height:1;color:#1a1a1a;">
-          <span id="currentWeight">—</span>
-          <span style="font-size:.9rem;font-weight:500;color:#777;margin-left:.25rem;" id="weightUnitLabel">kg</span>
+        <div id="curWeightVal"
+             style="font-size:2rem;font-weight:700;line-height:1;color:#1a1a1a;">
+          — kg
         </div>
-
-        <div style="display:flex;flex-wrap:wrap;gap:1.25rem;margin-top:1rem;">
-          <div>
-            <div class="meta" style="font-size:.7rem;color:#777;">Start</div>
-            <div style="font-size:1rem;font-weight:600;line-height:1.3;color:#1a1a1a;">
-              <span id="startWeight">—</span>
-              <span style="font-size:.8rem;font-weight:500;color:#777;margin-left:.25rem;">kg</span>
-            </div>
-          </div>
-
-          <div>
-            <div class="meta" style="font-size:.7rem;color:#777;">Change</div>
-            <div style="font-size:1rem;font-weight:600;line-height:1.3;">
-              <span id="deltaWeight">—</span>
-              <span style="font-size:.8rem;font-weight:500;color:#777;margin-left:.25rem;">kg</span>
-            </div>
-          </div>
-        </div>
-
-
       </div>
 
+      <div style="flex:1;min-width:160px;">
+        <div class="meta" style="font-size:.75rem;color:#777;margin-bottom:.25rem;">
+          Start
+        </div>
+        <div id="startWeightVal"
+             style="font-size:1.5rem;font-weight:600;line-height:1.2;">
+          — kg
+        </div>
+      </div>
 
-      <div style="flex:1;min-width:260px;max-width:340px;">
-        <h2 style="margin:0;font-size:1rem;font-weight:600;">Add new weigh-in</h2>
-
-        <form class="form-grid mt-3" id="weightForm" onsubmit="return false">
-          <label>Date
-            <input type="date" name="date" required>
-          </label>
-
-          <label>Weight
-            <input type="number" step="0.1" name="weight" placeholder="70.2" required>
-          </label>
-
-          <div class="full" style="margin-top:.5rem;">
-            <button class="btn" style="width:100%;max-width:220px;"
-              onclick="document.getElementById('weightForm').dispatchEvent(new Event('submit'))">
-              Save weigh-in
-            </button>
-          </div>
-        </form>
-
-        <div style="font-size:.7rem;color:#999;margin-top:.75rem;line-height:1.4;">
-          consistency matters more than perfection. Small daily ups/downs are normal.
+      <div style="flex:1;min-width:160px;">
+        <div class="meta" style="font-size:.75rem;color:#777;margin-bottom:.25rem;">
+          Change
+        </div>
+        <div id="diffWeightVal"
+             style="font-size:1.5rem;font-weight:600;line-height:1.2;">
+          — kg
+        </div>
+        <div class="meta" style="font-size:.75rem;color:#777;margin-top:.25rem;">
+          (latest − first)
         </div>
       </div>
 
     </div>
   </section>
 
-
-  <section class="card" style="margin-bottom:1rem;">
+  <!-- Log new weight -->
+  <section class="card">
     <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
       <div>
-        <h2 style="margin:0;font-size:1rem;font-weight:600;">Trend (last 30 entries)</h2>
+        <h2 style="margin:0;font-size:1rem;font-weight:600;">Log weight</h2>
         <div class="meta" style="font-size:.8rem;color:#777;">
-          We’ll chart everything you’ve logged.
+          Track changes over time.
         </div>
       </div>
-
     </div>
 
-    <canvas id="weightLine" height="200" class="mt-3" style="width:100%;max-width:100%;"></canvas>
+    <form class="form-grid mt-3" id="weightForm" onsubmit="return false">
+      <label>Date
+        <input type="date" name="date">
+      </label>
+
+      <label>Weight (kg)
+        <input type="number" name="weight" step="0.1" placeholder="80.0">
+      </label>
+
+      <div class="full" style="margin-top:.5rem;">
+        <button class="btn" style="width:100%;max-width:220px;"
+          onclick="document.getElementById('weightForm').dispatchEvent(new Event('submit'))">
+          Add entry
+        </button>
+      </div>
+    </form>
   </section>
 
+  <!-- Trend chart -->
+  <section class="card mt-3">
+    <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+      <div>
+        <h2 style="margin:0;font-size:1rem;font-weight:600;">Trend (last 10)</h2>
+        <div class="meta" style="font-size:.8rem;color:#777;">
+          Most recent first in table, but full series in chart.
+        </div>
+      </div>
+    </div>
 
-  <section class="card">
+    <div style="margin-top:1rem;">
+      <canvas id="weightLine" height="160"></canvas>
+    </div>
+  </section>
+
+  <!-- History table -->
+  <section class="card mt-3">
     <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
       <div>
         <h2 style="margin:0;font-size:1rem;font-weight:600;">History</h2>
         <div class="meta" style="font-size:.8rem;color:#777;">
-          Most recent first
+          Newest first
         </div>
       </div>
-
     </div>
 
     <div class="table-wrap" style="overflow-x:auto;margin-top:1rem;">
-      <table class="table" id="weightsTable" style="min-width:320px;">
+      <table class="table" style="min-width:300px;">
         <thead>
           <tr>
-            <th style="text-align:left;font-size:.75rem;font-weight:600;color:#555;">Date</th>
-            <th style="text-align:left;font-size:.75rem;font-weight:600;color:#555;">Weight</th>
+            <th style="text-align:left;">Date</th>
+            <th style="text-align:left;">Weight (kg)</th>
           </tr>
         </thead>
-        <tbody>
-
+        <tbody id="weightsTable">
+          <tr><td colspan="2" style="color:#777;font-size:.85rem;">No weight logged yet.</td></tr>
         </tbody>
       </table>
     </div>
@@ -150,6 +154,5 @@
 
 <footer class="footer">© 2025 CalPal</footer>
 
-<script src="js/app.js?v=17"></script>
 </body>
 </html>
