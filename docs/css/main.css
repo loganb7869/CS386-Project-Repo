@@ -335,3 +335,32 @@ button,.btn
     0 2px 4px rgba(0,0,0,.08),
     0 8px 24px rgba(0,0,0,.06);
 }
+
+.max-w-900 {
+  max-width: 900px;
+}
+
+.flex-wrap-gap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.align-start {
+  align-items: flex-start;
+}
+
+.btn-full {
+  width: 100%;
+  max-width: 220px;
+}
+
+.text-small-muted {
+  font-size: 0.75rem;
+  color: #777;
+  margin-bottom: 0.25rem;
+}
+
+.text-right {
+  text-align: right;
+}
