@@ -3,9 +3,8 @@ import unittest
 class CarbTrackerTest(unittest.TestCase):
   def test_trackCarbs(self):
 		track = carbTracker()
-		tracker.addFood(“Apple”, 25)
-		tracker.addFood(“Orange”, 11)
-		self.assertEqual(tracker.totalCarbs(), 36)
+		tracker.addFood(“Apple”, 25.4)
+		tracker.addFood(“Orange”, 11.2)
 		self.assertAlmostEqual(tracker.totalCarbs(), 36.6, places = 2)
 
 if __name__ == "__main__":
