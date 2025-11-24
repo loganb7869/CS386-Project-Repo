@@ -1,16 +1,21 @@
 import unittest 
+from decimal import Decimal
 
 class targetAndLoggedMacros(unittest.TestCase):
 
-	def test_MacroTracking({‘fat’: 77, ‘protein’: 53, ‘carbs’: 56})
-		tracker.addMacro(‘fat’, 77)
-		tracker.addMacro(‘protein’, 53)
-		tracker.addMacro(‘carbs’, 56)
-		self.assertEqual(tracker.addedMacro[‘fat’], 77)
-		self.assertEqual(tracker.addedMacro[‘protein’], 53)
-		self.assertEqual(tracker.addedMacro[‘carbs’], 56)
+	def test_MacroTracking({‘fat’: Decimal('77'), ‘protein’: Decimal('53'), ‘carbs’: Decimal('56')})
+		tracker.addMacro(‘fat’, Decimal('77'))
+		tracker.addMacro(‘protein’, Decimal('53'))
+		tracker.addMacro(‘carbs’, Decimal('56'))
+		self.assertEqual(tracker.addedMacro[‘fat’], Decimal('77'))
+		self.assertEqual(tracker.addedMacro[‘protein’], Decimal('53'))
+		self.assertEqual(tracker.addedMacro[‘carbs’], Decimal('56'))
 		remaining = tracker.remaining()
-		self.assertEqual(remaining, {‘fat’:23,’protein’:47,’carbs’:44})
+		self.assertEqual(remaining, {‘fat’: Decimal('23'),’protein’: Decimal('47'),’carbs’: Decimal('44')})
+		self.assertEqual(tracker.details["age"], 30)
+        self.assertEqual(tracker.details["weight"], Decimal("72.5"))
 
 if __name__ == "__main__":
     unittest.main()
+
+
