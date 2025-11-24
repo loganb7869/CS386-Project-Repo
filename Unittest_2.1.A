@@ -6,6 +6,7 @@ class CarbTrackerTest(unittest.TestCase):
 		tracker.addFood(“Apple”, 25)
 		tracker.addFood(“Orange”, 11)
 		self.assertEqual(tracker.totalCarbs(), 36)
+		self.assertAlmostEqual(tracker.totalCarbs(), 36.6, places = 2)
 
 if __name__ == "__main__":
     unittest.main()
