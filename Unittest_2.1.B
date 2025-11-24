@@ -1,4 +1,5 @@
 import unittest
+from decimal import Decimal
 
 class CalorieTrackerTest(unittest.TestCase):
 	def test_trackCals(self):
