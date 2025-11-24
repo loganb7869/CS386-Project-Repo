@@ -6,7 +6,7 @@ class FoodCost(unittest.TestCase):
 		track = costTracker()
 		tracker.addCost(“Apple”, 1.50)
 		tracker.addCost(“Orange”, 5.00)
-		self.assertEqual(tracker.totalCost(), 6.50)
+		self.assertAlmostEqual(tracker.totalCost(), 6.50)
 
 if __name__ == "__main__":
     unittest.main()
